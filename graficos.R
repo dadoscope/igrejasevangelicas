@@ -5,6 +5,7 @@ require(tidytext)
 require(lubridate)
 require(tm)
 
+
 # Load data
 
 
@@ -30,25 +31,31 @@ evang_data <- evang %>%
 # Gráfico de surgimento // cadastro das igrejas evangélicas: 
 
 p1 <- evang_data %>%
+  filter(data_inicio < zoo::as.yearmon("Jan 2019"),
+         data_inicio > zoo::as.yearmon("Dec 1959")) %>%
   group_by(data_inicio) %>% 
   count() %>% 
   ggplot(aes(x = data_inicio, y = n)) +
-  scale_x_continuous(breaks = c(1940,1960,1980, 2000, 2004, 2008, 2012, 2016)) + 
+  scale_x_continuous(breaks = c(1960, 1980, 2000, 2004, 2008, 2012, 2016)) + 
   geom_line() +
-  labs(title = "Início de Igrejas Evangélicas") +
+  labs(title = "Criação de Igrejas Evangélicas por mês/ano", x = "Tempo (mês/ano)", y = "Número de igrejas criadas") +
   theme_bw()
 
 
 p2 <- evang_data %>%
+  filter(data_inicio < zoo::as.yearmon("Jan 2019"),
+         data_inicio > zoo::as.yearmon("Dec 1959")) %>%
   group_by(data_sit) %>% 
   count() %>% 
   ggplot(aes(x = data_sit, y = n)) +
-  scale_x_continuous(breaks = c(1940,1960,1980, 2000, 2004, 2008, 2012, 2016)) + 
+  scale_x_continuous(breaks = c(1960,1980, 2000, 2004, 2008, 2012, 2016)) + 
   geom_line() +
-  labs(title = "Cadastramento de Igrejas Evangélicas") +
+  labs(title = "Cadastramento de Igrejas Evangélicaspor mês/ano", x = "Tempo (mês/ano)", y = "Número de igrejas criadas") +
   theme_bw()
 
+png("criacao_igrejas_tempo.png",width=3200,height=1800,res=300)
 cowplot::plot_grid(p1,p2, nrow = 2)
+dev.off()
 
 # Distância entre criação e cadastramento: Note que a partir de 2005-2006, algo assim, 
 # as igrejas já surgem e são cadastradas em menos de 2 anos
