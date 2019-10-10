@@ -80,6 +80,7 @@ df <- read.csv("data/final/cnae_labelled_data.csv.gz")
 evang <- df %>% 
   filter(is_evangelic == 1)
 
+
 # Data de Abertura x Data de Cadastro
 
 # Foi ajustado para mês // ano 
