@@ -12,6 +12,19 @@ getTidyGDP <- function(tweets){
   return(tweets_tidy)
 }
 
+cleanText <- function(vector) {
+  # Process text from a given vector
+  #     vector: vector of characters
+  require(tm)
+  require(stringr)
+  vector <- tolower(vector)
+  vector <- tm::removePunctuation(vector)
+  vector <- tm::stripWhitespace(vector)
+  vector <- tm::removeNumbers(vector)
+  vector <- stringr::str_replace(gsub("\\s+", " ", str_trim(vector)), "B", "b")
+  return(vector)
+}
+
 # Library
 
 require(tidyverse)

@@ -9,8 +9,6 @@ library(stats)
 
 
 # Load data
-
-
 df <- read.csv("data/final/cnae_labelled_data.csv.gz")
 
 evang <- df %>% 
