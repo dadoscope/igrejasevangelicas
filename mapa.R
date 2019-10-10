@@ -84,11 +84,13 @@ cleanText <- function(vector) {
   #     vector: vector of characters
   require(tm)
   require(stringr)
+  vector <- iconv(vector, to = 'ASCII//TRANSLIT')
   vector <- tolower(vector)
   vector <- tm::removePunctuation(vector)
   vector <- tm::stripWhitespace(vector)
   vector <- tm::removeNumbers(vector)
   vector <- stringr::str_replace(gsub("\\s+", " ", str_trim(vector)), "B", "b")
+  vector <- 
   return(vector)
 }
 
