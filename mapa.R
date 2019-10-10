@@ -102,26 +102,44 @@ require(lubridate)
 require(tm)
 library(brazilmaps)
 
+
 # Load data and filter Evangelic Churches
 
 df <- read.csv("data/final/cnae_labelled_data.csv.gz")
 evang <- df %>% 
   filter(is_evangelic == 1)
-
 tidy_evang <- getTidyGDP(evang)
 
-mun <- brazilmaps::get_brmap("City")
-tidy_evang$country_name <- cleanText(tidy_evang$country_name)
-mun$clean_nome <- cleanText(mun$nome)
+# Load demographic data
+pnud_minima <- abjData::pnud_muni %>% 
+  filter(ano == 2010) %>% 
+  select(municipio = municipio, 
+         starts_with("pop"))
+# Load maps
 
-mapa1 <- mun %>%  
+mun <- brazilmaps::get_brmap("City")
+
+# Joinning
+
+mun_pop <- mun %>% 
+  mutate(nome = cleanText(mun$nome)) %>% 
+  inner_join(pnud_minima %>% mutate(municipio = cleanText(municipio)), c("nome" = "municipio"))
+
+### Plot population
+#mun_pop %>% ggplot() + geom_sf(aes(fill = pop))
+
+#
+
+tidy_evang$country_name <- cleanText(tidy_evang$country_name)
+mun_pop$clean_nome <- cleanText(mun_pop$nome)
+
+mapa1 <- mun_pop %>%  
   left_join(tidy_evang %>% ungroup()%>% filter(year == ymd("2018-01-01")), 
             by= c("clean_nome" ="country_name" ) )
 
-
-
 mapa1 %>%
-  mutate(value = cut(value, c(0, 5, 10, 50, 100, 200, 500, 700, 1000, 2500, 5000))) %>% 
+  mutate(value = 1000*value/pop,
+         value = cut(value, c(0, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100))) %>% 
   ggplot() + geom_sf(aes(fill = as.factor(value)), 
         # ajusta tamanho das linhas
         colour = "transparent", size = 0.1) +
@@ -136,4 +154,4 @@ mapa1 %>%
         axis.text = element_blank(),
         axis.ticks = element_blank()) +
   labs(title = "Número de Igrejas Evangélicas em 2018",
-       fill = "Número de Igrejas")
+       fill = "Igrejas por 1000 habitantes")
