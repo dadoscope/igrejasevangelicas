@@ -120,9 +120,11 @@ mapa1 <- mun %>%
 
 
 
-geom_sf(data = mapa1, aes(fill = as.numeric(value)), 
+mapa1 %>%
+  mutate(value = cut(value, c(0, 5, 10, 50, 100, 200, 500, 700, 1000, 2500, 5000))) %>% 
+  ggplot() + geom_sf(aes(fill = as.factor(value)), 
         # ajusta tamanho das linhas
-        colour = "black", size = 0.1) +
+        colour = "transparent", size = 0.1) +
   geom_sf(data = get_brmap("State"),
           fill = "transparent",
           colour = "black", size = 0.5) +
@@ -133,4 +135,5 @@ geom_sf(data = mapa1, aes(fill = as.numeric(value)),
         panel.background = element_blank(),
         axis.text = element_blank(),
         axis.ticks = element_blank()) +
-  labs(title = "Número de Igrejas Evangélicas em 2018")
+  labs(title = "Número de Igrejas Evangélicas em 2018",
+       fill = "Número de Igrejas")
