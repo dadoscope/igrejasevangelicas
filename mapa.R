@@ -113,10 +113,24 @@ tidy_evang <- getTidyGDP(evang)
 mun <- brazilmaps::get_brmap("City")
 tidy_evang$country_name <- cleanText(tidy_evang$country_name)
 mun$clean_nome <- cleanText(mun$nome)
-mapa1 <- plot_brmap(mun,
-                    data_to_join = tidy_evang %>% filter(year == ymd("2018-01-01")),
-                    join_by = c("clean_nome" = "country_name"),
-                    var = "value")
-mapa1 +
-  scale_fill_viridis_c(option = 2) +
+
+mapa1 <- mun %>%  
+  left_join(tidy_evang %>% ungroup()%>% filter(year == ymd("2018-01-01")), 
+            by= c("clean_nome" ="country_name" ) )
+
+
+
+geom_sf(data = mapa1, aes(fill = as.numeric(value)), 
+        # ajusta tamanho das linhas
+        colour = "black", size = 0.1) +
+  geom_sf(data = get_brmap("State"),
+          fill = "transparent",
+          colour = "black", size = 0.5) +
+  # muda escala de cores
+  scale_fill_viridis_d(option = 2, begin = 0.2, end = 0.8) +
+  # tira sistema cartesiano
+  theme(panel.grid = element_line(colour = "transparent"),
+        panel.background = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank()) +
   labs(title = "Número de Igrejas Evangélicas em 2018")
